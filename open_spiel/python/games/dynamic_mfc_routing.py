@@ -33,8 +33,8 @@ _DEFAULT_PARAMS = {
     "players": -1
 }
 _GAME_TYPE = pyspiel.GameType(
-    short_name="mfc_dynamic_routing",
-    long_name="Mean Field Control Routing Game",
+    short_name="python_mfc_dynamic_routing",
+    long_name="Python Mean Field Control Routing Game",
     dynamics=pyspiel.GameType.Dynamics.MEAN_FIELD,
     chance_mode=pyspiel.GameType.ChanceMode.EXPLICIT_STOCHASTIC,
     information=pyspiel.GameType.Information.PERFECT_INFORMATION,

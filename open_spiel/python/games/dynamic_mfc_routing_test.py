@@ -40,12 +40,12 @@ class MeanFieldControlRoutingGameTest(absltest.TestCase):
 
   def test_load(self):
     """Test load and game creation."""
-    game = pyspiel.load_game("mfc_dynamic_routing")
+    game = pyspiel.load_game("python_mfc_dynamic_routing")
     game.new_initial_state()
 
   def test_create(self):
     """Checks we can create the game and clone states."""
-    game = pyspiel.load_game("mfc_dynamic_routing")
+    game = pyspiel.load_game("python_mfc_dynamic_routing")
     self.assertEqual(game.get_type().dynamics,
                      pyspiel.GameType.Dynamics.MEAN_FIELD)
     state = game.new_initial_state()
@@ -53,22 +53,22 @@ class MeanFieldControlRoutingGameTest(absltest.TestCase):
 
   def test_random_game(self):
     """Test random simulation."""
-    game = pyspiel.load_game("mfc_dynamic_routing")
+    game = pyspiel.load_game("python_mfc_dynamic_routing")
     pyspiel.random_sim_test(game, num_sims=10, serialize=False, verbose=True)
 
   def test_evolving_trajectory_with_uniform_policy(self):
     """Test evolving distribution."""
-    game = pyspiel.load_game("mfc_dynamic_routing")
+    game = pyspiel.load_game("python_mfc_dynamic_routing")
     distribution.DistributionPolicy(game, policy.UniformRandomPolicy(game))
 
   def test_non_default_param_from_string(self):
     """Check params can be given through string loading."""
-    game = pyspiel.load_game("mfc_dynamic_routing(max_num_time_step=5)")
+    game = pyspiel.load_game("python_mfc_dynamic_routing(max_num_time_step=5)")
     self.assertEqual(game.max_game_length(), 5)
 
   def test_non_default_param_from_dict(self):
     """Check params can be given through a dictionary."""
-    game = pyspiel.load_game("mfc_dynamic_routing",
+    game = pyspiel.load_game("python_mfc_dynamic_routing",
                              {"max_num_time_step": 5})
     self.assertEqual(game.max_game_length(), 5)
 
@@ -76,35 +76,35 @@ class MeanFieldControlRoutingGameTest(absltest.TestCase):
   # on the distribution.
   # def test_ficticious_play(self):
   #   """Test that ficticious play can be used on this game."""
-  #   mfg_game = pyspiel.load_game("mfc_dynamic_routing")
-  #   fp = fictitious_play.FictitiousPlay(mfg_game)
+  #   mfc_game = pyspiel.load_game("python_mfc_dynamic_routing")
+  #   fp = fictitious_play.FictitiousPlay(mfc_game)
   #   for _ in range(_NUMBER_OF_ITERATIONS_TESTS):
   #     fp.iteration()
-  #   nash_conv.NashConv(mfg_game, fp.get_policy())
+  #   nash_conv.NashConv(mfc_game, fp.get_policy())
 
   def test_online_mirror_descent(self):
     """Test that online mirror descent can be used on this game."""
-    mfg_game = pyspiel.load_game("mfc_dynamic_routing")
-    omd = mirror_descent.MirrorDescent(mfg_game)
+    mfc_game = pyspiel.load_game("python_mfc_dynamic_routing")
+    omd = mirror_descent.MirrorDescent(mfc_game)
     for _ in range(_NUMBER_OF_ITERATIONS_TESTS):
       omd.iteration()
-    nash_conv.NashConv(mfg_game, omd.get_policy())
+    nash_conv.NashConv(mfc_game, omd.get_policy())
 
   def test_online_mirror_descent_convergence(self):
     """Test that online mirror descent converges to equilibrium in default game."""
-    mfg_game = pyspiel.load_game("mfc_dynamic_routing", {
+    mfc_game = pyspiel.load_game("python_mfc_dynamic_routing", {
         "time_step_length": 0.05,
         "max_num_time_step": 100
     })
-    omd = mirror_descent.MirrorDescent(mfg_game, lr=1)
+    omd = mirror_descent.MirrorDescent(mfc_game, lr=1)
     for _ in range(50):
       omd.iteration()
     self.assertAlmostEqual(
-        nash_conv.NashConv(mfg_game, omd.get_policy()).nash_conv(), 0)
+        nash_conv.NashConv(mfc_game, omd.get_policy()).nash_conv(), 0)
 
   def test_braess_paradox(self):
     """Test that Braess paradox can be reproduced with the mean field game."""
-    mfg_game = pyspiel.load_game("mfc_dynamic_routing", {
+    mfc_game = pyspiel.load_game("python_mfc_dynamic_routing", {
         "time_step_length": 0.05,
         "max_num_time_step": 100
     })
@@ -124,12 +124,12 @@ class MeanFieldControlRoutingGameTest(absltest.TestCase):
             return {4: 2 / 3, 5: 1 / 3}
         raise ValueError(f"{legal_actions} is not correct.")
 
-    ne_policy = NashEquilibriumBraess(mfg_game, 1)
+    ne_policy = NashEquilibriumBraess(mfc_game, 1)
     self.assertEqual(
         -policy_value.PolicyValue(
-            mfg_game, distribution.DistributionPolicy(mfg_game, ne_policy),
-            ne_policy).value(mfg_game.new_initial_state()), 3.75)
-    self.assertEqual(nash_conv.NashConv(mfg_game, ne_policy).nash_conv(), 0.0)
+            mfc_game, distribution.DistributionPolicy(mfc_game, ne_policy),
+            ne_policy).value(mfc_game.new_initial_state()), 3.75)
+    self.assertEqual(nash_conv.NashConv(mfc_game, ne_policy).nash_conv(), 0.0)
 
     class SocialOptimumBraess(policy.Policy):
 
@@ -146,12 +146,12 @@ class MeanFieldControlRoutingGameTest(absltest.TestCase):
             return {5: 1.0}
         raise ValueError(f"{legal_actions} is not correct.")
 
-    so_policy = SocialOptimumBraess(mfg_game, 1)
+    so_policy = SocialOptimumBraess(mfc_game, 1)
     self.assertEqual(
         -policy_value.PolicyValue(
-            mfg_game, distribution.DistributionPolicy(mfg_game, so_policy),
-            so_policy).value(mfg_game.new_initial_state()), 3.5)
-    self.assertEqual(nash_conv.NashConv(mfg_game, so_policy).nash_conv(), 0.75)
+            mfc_game, distribution.DistributionPolicy(mfc_game, so_policy),
+            so_policy).value(mfc_game.new_initial_state()), 3.5)
+    self.assertEqual(nash_conv.NashConv(mfc_game, so_policy).nash_conv(), 0.75)
 
   def test_vehicle_origin_outside_network(self):
     """Check raise assertion if vehicle's origin is outside the Network."""
@@ -205,7 +205,7 @@ class MeanFieldControlRoutingGameTest(absltest.TestCase):
 
   def test_observer_correct(self):
     """Checks that the observer is correctly updated."""
-    game = pyspiel.load_game("mfc_dynamic_routing")
+    game = pyspiel.load_game("python_mfc_dynamic_routing")
     num_locations, steps = 8, 10
     self.assertEqual(game.num_distinct_actions(), num_locations)
     self.assertEqual(game.max_game_length(), steps)
@@ -247,13 +247,13 @@ class MeanFieldControlRoutingGameTest(absltest.TestCase):
       "Test of OMD on Sioux Falls is disabled as it takes a long time to run.")
   def test_online_mirror_descent_sioux_falls_dummy(self):
     """Test that online mirror descent can be used on the Sioux Falls game."""
-    mfg_game = factory.create_game_with_setting(
-        "mfc_dynamic_routing",
+    mfc_game = factory.create_game_with_setting(
+        "python_mfc_dynamic_routing",
         "dynamic_routing_sioux_falls_dummy_demand")
-    omd = mirror_descent.MirrorDescent(mfg_game)
+    omd = mirror_descent.MirrorDescent(mfc_game)
     for _ in range(_NUMBER_OF_ITERATIONS_TESTS):
       omd.iteration()
-    nash_conv.NashConv(mfg_game, omd.get_policy())
+    nash_conv.NashConv(mfc_game, omd.get_policy())
 
 
 if __name__ == "__main__":
