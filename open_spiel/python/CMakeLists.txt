@@ -208,6 +208,7 @@ set(PYTHON_TESTS ${PYTHON_TESTS}
   mfg/games/crowd_modelling_test.py
   mfg/games/predator_prey_test.py
   mfg/games/dynamic_routing_test.py
+  mfc/games/dynamic_routing_test.py
   tests/mfg_implementation_test/mfg_test.py
   tests/bot_test.py
   tests/games_bridge_test.py
